@@ -1,5 +1,11 @@
 package Kelas;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.*;
@@ -42,6 +48,24 @@ public class Mahasiswa {
         String jsonResponse = response.getBody();
         JSONObject obj = new JSONObject(jsonResponse);
         return obj;
+    }
+
+    public static ImageIcon decodeBase64ToImage(String base64String, int width, int height) {
+        try {
+            if (base64String.contains(",")) {
+                base64String = base64String.split(",")[1];
+            }
+
+            byte[] decodedBytes = Base64.getDecoder().decode(base64String);
+            ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
+            BufferedImage bufferedImage = ImageIO.read(bis);
+            ImageIcon image = new ImageIcon(bufferedImage.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+
+            return image;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

@@ -3,12 +3,6 @@ package View;
 import org.json.*;
 import Kelas.Mahasiswa;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.net.URL;
-import java.util.Base64;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
@@ -26,8 +20,7 @@ public class Frame_Profil extends javax.swing.JFrame {
         loadProfile();
     }
 
-    void loadProfile() {
-        tFoto.setIcon(null);
+    public void loadProfile() {
         JSONArray data = Mahasiswa.getDatamhs();
         for (int i = 0; i < data.length(); i++) {
             JSONObject item = data.getJSONObject(i);
@@ -35,42 +28,19 @@ public class Frame_Profil extends javax.swing.JFrame {
                 tNim.setText(item.getString("mhs_nim"));
                 tNama.setText(item.getString("mhs_nama"));
                 tJK.setText(item.getString("mhs_jk"));
-                tTTL.setText(item.getString("mhs_tempatlahir") + "," + item.getString("mhs_tanggallahir"));
+                tTTL.setText(item.getString("mhs_tempatlahir") + ", " + item.getString("mhs_tanggallahir"));
                 tEmail.setText(item.getString("mhs_email"));
                 tHP.setText(item.getString("mhs_hp"));
 
-                if (item.has("mhs_foto") && !item.isNull("mhs_foto") && !item.getString("mhs_foto").isEmpty()) {
-                    String dataFoto = item.getString("mhs_foto");
-
-                    try {
-                        if (dataFoto.startsWith("data:image")) {
-                            String baseData = dataFoto.split(",")[1];
-                            byte[] imageBytes = Base64.getDecoder().decode(baseData);
-                            ByteArrayInputStream bas = new ByteArrayInputStream(imageBytes);
-                            BufferedImage bmg = ImageIO.read(bas);
-                            Image image = bmg.getScaledInstance(tFoto.getWidth(), tFoto.getHeight(), Image.SCALE_SMOOTH);
-                            ImageIcon imic = new ImageIcon(image);
-                            tFoto.setText(null);
-                            tFoto.setIcon(imic);
-                        } else {
-                            URL url = new URL(dataFoto);
-                            BufferedImage bmg = ImageIO.read(url);
-                            Image image = bmg.getScaledInstance(tFoto.getWidth(), tFoto.getHeight(), Image.SCALE_SMOOTH);
-                            ImageIcon imic = new ImageIcon(image);
-                            tFoto.setText(null);
-                            tFoto.setIcon(imic);
-
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        tFoto.setText("Tidak terdeteksi");
-                    }
+                if (item.has("mhs_foto") && !item.isNull("mhs_foto")) {
+                    ImageIcon image = Mahasiswa.decodeBase64ToImage(item.getString("mhs_foto"), tFoto.getWidth(), tFoto.getHeight());
+                    tFoto.setIcon(image);
+                    tFoto.setText(null);
                 } else {
                     tFoto.setText("Belum ada foto");
+                    tFoto.setIcon(null);
                 }
-
             }
-
         }
     }
 
@@ -292,15 +262,15 @@ public class Frame_Profil extends javax.swing.JFrame {
     }//GEN-LAST:event_bCloseActionPerformed
 
     private void bNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNextActionPerformed
-        if (Mahasiswa.getBaris()>= 0 && Mahasiswa.getBaris() <= Mahasiswa.getDatamhs().length()){
-            Mahasiswa.setBaris(Mahasiswa.getBaris()+1);
+        if (Mahasiswa.getBaris() >= 0 && Mahasiswa.getBaris() <= Mahasiswa.getDatamhs().length()) {
+            Mahasiswa.setBaris(Mahasiswa.getBaris() + 1);
             loadProfile();
         }
     }//GEN-LAST:event_bNextActionPerformed
 
     private void bPreviousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPreviousActionPerformed
-        if (Mahasiswa.getBaris()> 0 && Mahasiswa.getBaris() <= Mahasiswa.getDatamhs().length()){
-            Mahasiswa.setBaris(Mahasiswa.getBaris()-1);
+        if (Mahasiswa.getBaris() > 0 && Mahasiswa.getBaris() <= Mahasiswa.getDatamhs().length()) {
+            Mahasiswa.setBaris(Mahasiswa.getBaris() - 1);
             loadProfile();
         }
     }//GEN-LAST:event_bPreviousActionPerformed
